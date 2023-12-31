@@ -1,6 +1,6 @@
 import { FbProvider } from "../src";
 import { Client, ErrorCode, OpenFeature, ProviderEvents, ProviderStatus } from "@openfeature/server-sdk";
-import { IClientContext, IFbClientWithEvents, integrations, ReasonKinds, IFallthrough, IStore } from "@featbit/node-server-sdk";
+import { IClientContext, IFbClient, integrations, ReasonKinds, IFallthrough, IStore } from "@featbit/node-server-sdk";
 import { translateContext } from "../src/translateContext";
 
 it('can be initialized', async () => {
@@ -85,7 +85,7 @@ it('emits events for flag changes', async () => {
 describe('given a mock FbClient', () => {
   const logger: integrations.TestLogger = new integrations.TestLogger();
   let provider: FbProvider;
-  let fbClient: IFbClientWithEvents;
+  let fbClient: IFbClient;
   let openFeatureClient: Client;
   const basicContext = { targetingKey: 'the-key' };
   const testFlagKey = 'a-key';

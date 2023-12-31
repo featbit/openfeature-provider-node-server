@@ -1,0 +1,21 @@
+{
+  "name": "node-server-demo",
+  "version": "1.0.0",
+  "description": "",
+  "type": "commonjs",
+  "scripts": {
+    "esm": "tsx src/esm.ts",
+    "cjs": "tsx src/commonjs.cjs"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@featbit/node-server-sdk": "file:../../../featbit-node-server-sdk",
+    "@featbit/openfeature-provider-node-server": "file:../../",
+    "@openfeature/server-sdk": "^1.7.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.1",
+    "tsx": "^4.6.2"
+  }
+}
