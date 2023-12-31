@@ -23,8 +23,8 @@ OpenFeature.addHandler(ProviderEvents.ConfigurationChanged, async (eventDetails)
     console.log({...eventDetails, value});
 });
 
-(async () => {
-    // When the FeatBit provider is closed it will flush the events on the FbClient instance.
-    // This can be useful for short lived processes.
-    // await OpenFeature.close();
-})();
+// (async () => {
+//     // When the FeatBit provider is closed it will flush the events on the FbClient instance.
+//     // This can be useful for short lived processes.
+//     await OpenFeature.close();
+// })();

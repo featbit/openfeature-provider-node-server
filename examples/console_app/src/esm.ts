@@ -1,7 +1,12 @@
 import { OpenFeature, ProviderEvents } from '@openfeature/server-sdk';
 import { FbProvider } from '@featbit/openfeature-provider-node-server';
 
-const provider = new FbProvider({ sdkKey: 'j-2pVwU1e0uNg8LR_u27KAL1n1amy42U2P2kDf5acCMA', streamingUri: 'ws://localhost:5100', eventsUri: 'http://localhost:5100' });
+const provider = new FbProvider({
+  sdkKey: 'j-2pVwU1e0uNg8LR_u27KAL1n1amy42U2P2kDf5acCMA',
+  streamingUri: 'ws://localhost:5100',
+  eventsUri: 'http://localhost:5100'
+});
+
 OpenFeature.setProvider(provider);
 
 // If you need access to the FbClient, then you can use provider.getClient()
@@ -22,8 +27,8 @@ OpenFeature.addHandler(ProviderEvents.ConfigurationChanged, async (eventDetails)
   console.log({...eventDetails, value});
 });
 
-(async () => {
-  // When the FeatBit provider is closed it will flush the events on the FbClient instance.
-  // This can be useful for short lived processes.
-  // await OpenFeature.close();
-})();
+// (async () => {
+//   // When the FeatBit provider is closed it will flush the events on the FbClient instance.
+//   // This can be useful for short lived processes.
+//   await OpenFeature.close();
+// })();
