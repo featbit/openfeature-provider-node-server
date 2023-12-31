@@ -21,6 +21,10 @@ export function translateResult<T>(result: IEvalDetail<T>): ResolutionDetails<T>
     return errorResult(result.value, ErrorCode.TYPE_MISMATCH, result.reason);
   }
 
+  if (result.kind === ReasonKinds.FlagNotFound) {
+    return errorResult(result.value, ErrorCode.FLAG_NOT_FOUND, result.reason);
+  }
+
   if (result.kind === ReasonKinds.Error) {
     return errorResult(result.value, ErrorCode.GENERAL, result.reason);
   }

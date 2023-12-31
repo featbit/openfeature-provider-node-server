@@ -2,7 +2,6 @@ import {
     EvaluationContext,
     Hook,
     JsonValue,
-    Logger,
     OpenFeatureEventEmitter,
     Provider,
     ProviderEvents,
@@ -25,7 +24,7 @@ import { translateResult } from "./translateResult";
  * An OpenFeature provider for the LaunchDarkly SDK for node.
  */
 export class FbProvider implements Provider {
-    metadata: {
+    metadata = {
         name: 'featbit-node-provider',
     };
 
@@ -93,7 +92,7 @@ export class FbProvider implements Provider {
     ): Promise<ResolutionDetails<boolean>> {
         const res = await this.client.boolVariationDetail(
           flagKey,
-          translateContext(context),
+          translateContext(this.logger, context),
           defaultValue,
         );
 
@@ -119,7 +118,7 @@ export class FbProvider implements Provider {
     ): Promise<ResolutionDetails<string>> {
         const res = await this.client.stringVariationDetail(
           flagKey,
-          translateContext(context),
+          translateContext(this.logger, context),
           defaultValue,
         );
 
@@ -145,7 +144,7 @@ export class FbProvider implements Provider {
     ): Promise<ResolutionDetails<number>> {
         const res = await this.client.numberVariationDetail(
           flagKey,
-          translateContext(context),
+          translateContext(this.logger, context),
           defaultValue,
         );
 
@@ -169,7 +168,7 @@ export class FbProvider implements Provider {
     ): Promise<ResolutionDetails<T>> {
         const res = await this.client.jsonVariationDetail(
           flagKey,
-          translateContext(context),
+          translateContext(this.logger, context),
           defaultValue,
         );
 

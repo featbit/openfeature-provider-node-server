@@ -1,15 +1,18 @@
 import { translateContext } from "../src/translateContext";
+import { integrations } from "@featbit/node-server-sdk";
 
+const testLogger = new integrations.TestLogger();
 it('Uses the targetingKey as the user key', () => {
-  expect(translateContext({ targetingKey: 'the-key' })).toEqual({ key: 'the-key', name: '', customizedProperties: [] });
+  expect(translateContext(testLogger, { targetingKey: 'the-key' })).toEqual({ key: 'the-key', name: '', customizedProperties: [] });
 });
 
 it('Uses the name as the user name', () => {
-  expect(translateContext({ name: 'the-key' })).toEqual({ key: '', name: 'the-key', customizedProperties: [] });
+  expect(translateContext(testLogger, { name: 'the-key' })).toEqual({ key: '', name: 'the-key', customizedProperties: [] });
 });
 
 it('gives targetingKey precedence over key', () => {
   expect(translateContext(
+    testLogger,
     { targetingKey: 'target-key', key: 'key-key' },
   )).toEqual({
     key: 'target-key',
@@ -29,6 +32,7 @@ describe.each([
 ])('given custom attributes', (key, value) => {
   it('accepts the custom attribute as customized property correctly', () => {
     expect(translateContext(
+      testLogger,
       { targetingKey: 'the-key', name: 'abc', [key]: value },
     )).toEqual({
       key: 'the-key',
@@ -47,6 +51,7 @@ it('Accepts array custom as customized properties', () => {
   };
 
   expect(translateContext(
+    testLogger,
     context,
   )).toEqual({
     key: 'the-key',
@@ -65,6 +70,7 @@ it('Accepts object custom as customized properties', () => {
   };
 
   expect(translateContext(
+    testLogger,
     context,
   )).toEqual({
     key: 'the-key',
@@ -84,6 +90,7 @@ it('Accepts object custom as customized properties', () => {
 
 it.each(['key', 'targetingKey'])('handles key or targetingKey', (key) => {
   expect(translateContext(
+    testLogger,
     { [key]: 'the-key' },
   )).toEqual({
     key: 'the-key',
