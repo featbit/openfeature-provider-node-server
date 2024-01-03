@@ -13,8 +13,7 @@ export function translateContext(logger: ILogger, evalContext: EvaluationContext
       + 'type must be a string.');
   }
 
-  const builder = new UserBuilder()
-    .key(key)
+  const builder = new UserBuilder(key)
     .name(name);
 
   if (custom) {

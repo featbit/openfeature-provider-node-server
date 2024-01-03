@@ -10,7 +10,7 @@ it('can be initialized', async () => {
 
   expect(provider.status).toEqual(ProviderStatus.READY);
   expect(logger.logs.length).toEqual(2);
-  expect(logger.logs).toEqual(['Offline mode enabled. No streaming or polling will occur.', 'FbClient started successfully.']);
+  expect(logger.logs).toEqual(['Offline mode enabled. No data synchronization with the FeatBit server will occur.', 'FbClient started successfully.']);
   await provider.onClose();
 });
 
@@ -19,6 +19,8 @@ it('can fail to initialize client', async () => {
   const provider = new FbProvider({
     sdkKey: 'sdk-key',
     logger,
+    streamingUri: 'ws://localhost:6001',
+    eventsUri: 'http://localhost:6001',
     dataSynchronizer: (
       clientContext: IClientContext,
       store: IStore,
