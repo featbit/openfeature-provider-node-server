@@ -21,11 +21,11 @@
   },
   "homepage": "https://github.com/featbit/openfeature-provider-node-server#readme",
   "peerDependencies": {
-    "@featbit/node-server-sdk": "file:../featbit-node-server-sdk",
+    "@featbit/node-server-sdk": "@featbit/featbit-node-server-sdk",
     "@openfeature/server-sdk": "^1.7.5"
   },
   "devDependencies": {
-    "@featbit/node-server-sdk": "file:../featbit-node-server-sdk",
+    "@featbit/node-server-sdk": "@featbit/featbit-node-server-sdk",
     "@openfeature/server-sdk": "^1.7.5",
     "@types/jest": "^29.5.11",
     "jest": "^29.7.0",
