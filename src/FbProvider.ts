@@ -48,9 +48,9 @@ export class FbProvider implements Provider {
 
     try {
       this.client = new FbClientBuilder(options).build();
-      this.client.on('update', ({key}: {
-        key: string
-      }) => this.events.emit(ProviderEvents.ConfigurationChanged, {flagsChanged: [key]}))
+      this.client.on('update', (keys: string[]) => {
+        this.events.emit(ProviderEvents.ConfigurationChanged, {flagsChanged: keys})
+      })
     } catch (err) {
       this.clientConstructionError = err;
       this.logger.error(`Encountered unrecoverable initialization error, ${ err }`);

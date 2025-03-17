@@ -9,6 +9,7 @@ it.each([
   { yes: 'no' },
 ])('puts the value into the result.', (value) => {
   const evalDetail: IEvalDetail<typeof value> = {
+    flagKey: "xxx",
     value,
     kind: ReasonKinds.FallThrough,
   }
@@ -23,6 +24,7 @@ it.each([
   ReasonKinds.RuleMatch
 ])('populates the resolution reason with kind', (kind: ReasonKinds) => {
   expect(translateResult<boolean>({
+    flagKey: "xxx",
     value: true,
     kind
   }).reason).toEqual(kind);
@@ -34,6 +36,7 @@ it.each([
   [ReasonKinds.ClientNotReady, ErrorCode.PROVIDER_NOT_READY],
 ])('populates the resolution reason with error', (kind: ReasonKinds, expectedErrorCode) => {
   const result = translateResult<boolean>({
+    flagKey: "xxx",
     value: true,
     kind
   });
@@ -44,6 +47,7 @@ it.each([
 
 it('does not populate the errorCode when there is not an error', () => {
   const translated = translateResult<boolean>({
+    flagKey: "xxx",
     value: true,
     kind: ReasonKinds.FallThrough,
   });

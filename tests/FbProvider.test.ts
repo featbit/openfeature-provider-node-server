@@ -80,6 +80,7 @@ it('emits events for flag changes', async () => {
   expect(await provider.getClient()
     .stringVariation('flagA', { key: 'test-key' }, 'false'))
     .toEqual('true');
+
   expect(count).toEqual(1);
   await provider.onClose();
 });
@@ -139,6 +140,7 @@ describe('given a mock FbClient', () => {
   // String variations
   it('calls the client correctly for string variations', async () => {
     fbClient.evaluateCore<string> = jest.fn( () => ({
+      flagKey: testFlagKey,
       kind: ReasonKinds.Off,
       reason: '',
       value: 'some value'
@@ -165,6 +167,7 @@ describe('given a mock FbClient', () => {
   // Boolean variations
   it('calls the client correctly for boolean variations', async () => {
     fbClient.evaluateCore<boolean> = jest.fn( () => ({
+      flagKey: testFlagKey,
       kind: ReasonKinds.Off,
       reason: '',
       value: true
@@ -202,6 +205,7 @@ describe('given a mock FbClient', () => {
   // Numeric variations
   it('calls the client correctly for numeric variations', async () => {
     fbClient.evaluateCore<number> = jest.fn( () => ({
+      flagKey: testFlagKey,
       kind: ReasonKinds.Off,
       reason: '',
       value: 1
@@ -239,6 +243,7 @@ describe('given a mock FbClient', () => {
   // JSON variations
   it('calls the client correctly for object variations', async () => {
     fbClient.evaluateCore<any> = jest.fn( () => ({
+      flagKey: testFlagKey,
       kind: ReasonKinds.Off,
       reason: '',
       value: { some: 'value' }
