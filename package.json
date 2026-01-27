@@ -1,6 +1,6 @@
 {
   "name": "@featbit/openfeature-provider-node-server",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A OpenFeature provider implementation for the FeatBit node SDK",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,6 +13,10 @@
     "type": "git",
     "url": "git+https://github.com/featbit/openfeature-provider-node-server.git"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
