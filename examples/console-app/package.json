@@ -12,7 +12,7 @@
   "dependencies": {
     "@featbit/node-server-sdk": "file:../../../featbit-node-server-sdk",
     "@featbit/openfeature-provider-node-server": "file:../../",
-    "@openfeature/server-sdk": "^1.7.5"
+    "@openfeature/server-sdk": "^1.20.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.1",

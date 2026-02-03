@@ -2,7 +2,7 @@ const fb = require('@featbit/node-server-sdk');
 const { FbProvider } = require("@featbit/openfeature-provider-node-server");
 const { OpenFeature, ProviderEvents } = require("@openfeature/server-sdk");
 
-const provider = new FbProvider({ sdkKey: 'j-2pVwU1e0uNg8LR_u27KAL1n1amy42U2P2kDf5acCMA', streamingUri: 'ws://localhost:5100', eventsUri: 'http://localhost:5100' });
+const provider = new FbProvider({ sdkKey: 'K-uRsveVY0m8r_8QBJYZfwicaDhphJRkq67HkDfO44sQ', streamingUri: 'wss://app-eval.featbit.co', eventsUri: 'https://app-eval.featbit.co' });
 OpenFeature.setProvider(provider);
 
 // If you need access to the FbClient, then you can use provider.getClient()
