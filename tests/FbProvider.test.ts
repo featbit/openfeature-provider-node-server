@@ -12,6 +12,7 @@ it('can be initialized', async () => {
   expect(logger.logs.length).toEqual(2);
   expect(logger.logs).toEqual(['Offline mode enabled. No data synchronization with the FeatBit server will occur.', 'FbClient started successfully.']);
   await provider.onClose();
+  await provider.getClient().close();
 });
 
 it('can fail to initialize client', async () => {
@@ -25,7 +26,7 @@ it('can fail to initialize client', async () => {
       clientContext: IClientContext,
       store: IStore,
       dataSourceUpdates: any,
-      initSuccessHandler: VoidFunction,
+      initSuccessHandler: () => void,
       errorHandler?: (e: Error) => void,
     ) => ({
       start: () => {
@@ -82,6 +83,7 @@ it('emits events for flag changes', async () => {
     .toEqual('true');
 
   expect(count).toEqual(1);
+  await provider.getClient().close();
   await provider.onClose();
 });
 
@@ -130,21 +132,20 @@ describe('given a mock FbClient', () => {
     logger.reset();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.resetAllMocks();
+    await fbClient.close();
+    await provider.onClose();
   })
 
-  afterAll(async () => {
-    await provider.onClose();
-  });
   // String variations
   it('calls the client correctly for string variations', async () => {
-    fbClient.evaluateCore<string> = jest.fn( () => ({
+    jest.spyOn(fbClient, 'evaluateCore').mockReturnValue({
       flagKey: testFlagKey,
       kind: ReasonKinds.Off,
       reason: '',
       value: 'some value'
-    }));
+    });
     await openFeatureClient.getStringDetails(testFlagKey, 'default', basicContext);
     expect(fbClient.evaluateCore)
       .toHaveBeenCalledWith(testFlagKey, translateContext(logger, basicContext), 'default', expect.anything());
@@ -166,12 +167,12 @@ describe('given a mock FbClient', () => {
 
   // Boolean variations
   it('calls the client correctly for boolean variations', async () => {
-    fbClient.evaluateCore<boolean> = jest.fn( () => ({
+    jest.spyOn(fbClient, 'evaluateCore').mockReturnValue({
       flagKey: testFlagKey,
       kind: ReasonKinds.Off,
       reason: '',
       value: true
-    }));
+    });
     await openFeatureClient.getBooleanDetails(testFlagKey, false, basicContext);
     expect(fbClient.evaluateCore)
       .toHaveBeenCalledWith(testFlagKey, translateContext(logger, basicContext), false, expect.anything());
@@ -204,12 +205,12 @@ describe('given a mock FbClient', () => {
 
   // Numeric variations
   it('calls the client correctly for numeric variations', async () => {
-    fbClient.evaluateCore<number> = jest.fn( () => ({
+    jest.spyOn(fbClient, 'evaluateCore').mockReturnValue({
       flagKey: testFlagKey,
       kind: ReasonKinds.Off,
       reason: '',
       value: 1
-    }));
+    });
     await openFeatureClient.getNumberDetails(testFlagKey, 0, basicContext);
     expect(fbClient.evaluateCore)
       .toHaveBeenCalledWith(testFlagKey, translateContext(logger, basicContext), 0, expect.anything());
@@ -242,12 +243,12 @@ describe('given a mock FbClient', () => {
 
   // JSON variations
   it('calls the client correctly for object variations', async () => {
-    fbClient.evaluateCore<any> = jest.fn( () => ({
+    jest.spyOn(fbClient, 'evaluateCore').mockReturnValue({
       flagKey: testFlagKey,
       kind: ReasonKinds.Off,
       reason: '',
       value: { some: 'value' }
-    }));
+    });
     await openFeatureClient.getObjectDetails(testFlagKey, {}, basicContext);
     expect(fbClient.evaluateCore)
       .toHaveBeenCalledWith(testFlagKey, translateContext(logger, basicContext), {}, expect.anything());
