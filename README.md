@@ -6,6 +6,29 @@ This is the OpenFeature provider for the [Node.js Server-Side SDK](https://githu
 
 The FeatBit OpenFeature provider is designed primarily for use in multi-user systems such as web servers and applications. It is not intended for use in desktop and embedded systems applications.
 
+## Tracking
+
+After registering and initializing the provider, use the OpenFeature client to track events:
+
+```js
+const client = OpenFeature.getClient();
+const context = { targetingKey: 'user-123' };
+
+client.track('page-view', context);
+client.track('purchase', context, { value: 99.9 });
+```
+
+Tracking uses the same context-to-user mapping as flag evaluations, including `targetingKey`
+(or the legacy `key`), `name`, and custom user attributes. OpenFeature merges context before
+passing it to the provider, so a user key set on the client or global context can also be used.
+The optional `value` is passed to FeatBit as the numeric metric value; when omitted, the
+FeatBit SDK defaults it to `1`. A value of `0` is preserved. Other tracking event details
+are ignored because the FeatBit SDK only supports a numeric metric value.
+
+`track` returns `void` and does not need to be awaited. Events are delivered by the FeatBit
+SDK's event processor. Call `await OpenFeature.close()` at application shutdown to flush
+pending events and release resources.
+
 ## Supported Node versions
 
 This version of the FeatBit OpenFeature provider is compatible with Node.js versions 16 and above.
