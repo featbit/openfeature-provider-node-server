@@ -7,6 +7,7 @@ import {
   ProviderEvents,
   ProviderStatus,
   ResolutionDetails,
+  TrackingEventDetails,
 } from "@openfeature/server-sdk";
 import {
   BasicLogger,
@@ -175,6 +176,14 @@ export class FbProvider implements Provider {
     );
 
     return Promise.resolve(translateResult<T>(res));
+  }
+
+  /**
+   * Tracks an event with the evaluation user and optional numeric metric value.
+   * FeatBit does not support additional tracking event details.
+   */
+  track(eventName: string, context: EvaluationContext, details?: TrackingEventDetails): void {
+    this.client.track(translateContext(this.logger, context), eventName, details?.value);
   }
 
   /**

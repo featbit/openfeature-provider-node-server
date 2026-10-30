@@ -9,8 +9,20 @@ OpenFeature.setProvider(provider);
 
 // Evaluations before the provider indicates it is ready may get default values with a
 // CLIENT_NOT_READY reason.
-OpenFeature.addHandler(ProviderEvents.Ready, (eventDetails) => {
+OpenFeature.addHandler(ProviderEvents.Ready, async (eventDetails) => {
     console.log(`Changed ${eventDetails.flagsChanged}`);
+
+    const client = OpenFeature.getClient();
+    // targetingKey identifies the user, not the metric event name.
+    const context = { targetingKey: 'my-key' };
+    const value = await client.getBooleanValue('ff1', false, context);
+    console.log({ value });
+
+    // Demo events: in an application, track when the corresponding action occurs.
+    // The first argument is the metric event name configured in FeatBit.
+    // Use the same user context as the flag evaluation; no other user fields are required.
+    client.track('page-view', context); // Omitted metric value defaults to 1.
+    client.track('purchase', context, { value: 99.9 }); // Custom numeric metric value.
 });
 
 
