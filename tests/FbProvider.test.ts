@@ -58,11 +58,9 @@ it('emits events for flag changes', async () => {
 
   const fallthrough: IFallthrough = {
     dispatchKey: "keyId",
-    includedInExpt: true,
     variations: [
       {
         id: "trueId",
-        exptRollout: 1,
         rollout: [0, 1]
       }
     ]
@@ -105,11 +103,9 @@ describe('given a mock FbClient', () => {
       .disabledVariationId('invalidId')
       .fallthrough({
         dispatchKey: "keyId",
-        includedInExpt: true,
         variations: [
           {
             id: "trueId",
-            exptRollout: 1,
             rollout: [0, 1]
           }
         ]
