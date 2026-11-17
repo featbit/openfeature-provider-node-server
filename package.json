@@ -1,6 +1,6 @@
 {
   "name": "@featbit/openfeature-provider-node-server",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "A OpenFeature provider implementation for the FeatBit node SDK",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
