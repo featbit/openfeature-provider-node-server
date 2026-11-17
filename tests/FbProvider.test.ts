@@ -293,4 +293,99 @@ describe('given a mock FbClient', () => {
   });
 });
 
+describe('initialization recovery', () => {
+  let provider: FbProvider;
+  let completeInitialization: () => void;
+  const domain = 'initialization-recovery';
 
+  beforeEach(() => {
+    jest.useFakeTimers();
+    provider = new FbProvider({
+      sdkKey: 'sdk-key',
+      streamingUri: 'ws://localhost:6001',
+      eventsUri: 'http://localhost:6001',
+      disableEvents: true,
+      startWaitTime: 50,
+      logger: new integrations.TestLogger(),
+      dataSynchronizer: (_context, _store, _updates, onSuccess) => {
+        completeInitialization = onSuccess;
+        return { start() {}, stop() {}, close() {} };
+      },
+    });
+  });
+
+  afterEach(async () => {
+    await OpenFeature.close();
+    await provider.onClose();
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  async function timeOut() {
+    const rejected = expect(OpenFeature.setProviderAndWait(domain, provider)).rejects.toThrow('50 milliseconds');
+    await jest.advanceTimersByTimeAsync(50);
+    await rejected;
+  }
+
+  it('restores provider and OpenFeature status after the SDK becomes ready late', async () => {
+    await timeOut();
+    const client = OpenFeature.getClient(domain);
+    const ready = jest.fn();
+    client.addHandler(ProviderEvents.Ready, ready);
+    expect(provider.status).toBe(ProviderStatus.ERROR);
+    expect(client.providerStatus).toBe(ProviderStatus.ERROR);
+
+    completeInitialization();
+    await jest.advanceTimersByTimeAsync(0);
+
+    expect(provider.getClient().initialized()).toBe(true);
+    expect(provider.status).toBe(ProviderStatus.READY);
+    expect(client.providerStatus).toBe(ProviderStatus.READY);
+    expect(ready).toHaveBeenCalledTimes(1);
+    completeInitialization();
+    await jest.advanceTimersByTimeAsync(0);
+    expect(ready).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not duplicate the normal OpenFeature ready notification', async () => {
+    const initialization = OpenFeature.setProviderAndWait(domain, provider);
+    const client = OpenFeature.getClient(domain);
+    const ready = jest.fn();
+    client.addHandler(ProviderEvents.Ready, ready);
+    completeInitialization();
+    await initialization;
+    await jest.advanceTimersByTimeAsync(0);
+    expect(client.providerStatus).toBe(ProviderStatus.READY);
+    expect(ready).toHaveBeenCalledTimes(1);
+  });
+
+  it('handles readiness between timeout and the initialization rejection handler', async () => {
+    const initialization = OpenFeature.setProviderAndWait(domain, provider);
+    jest.advanceTimersByTime(50);
+    completeInitialization();
+    await initialization;
+    expect(provider.status).toBe(ProviderStatus.READY);
+    expect(OpenFeature.getClient(domain).providerStatus).toBe(ProviderStatus.READY);
+  });
+
+  it('initializes successfully when the SDK recovered before provider registration', async () => {
+    const rejected = expect(provider.getClient().waitForInitialization()).rejects.toThrow();
+    await jest.advanceTimersByTimeAsync(50);
+    await rejected;
+    completeInitialization();
+    await OpenFeature.setProviderAndWait(domain, provider);
+    expect(OpenFeature.getClient(domain).providerStatus).toBe(ProviderStatus.READY);
+  });
+
+  it('cancels pending recovery and removes its ready listener on close', async () => {
+    await timeOut();
+    const ready = jest.fn();
+    provider.events.addHandler(ProviderEvents.Ready, ready);
+    completeInitialization();
+    await provider.onClose();
+    await jest.advanceTimersByTimeAsync(0);
+    expect(provider.getClient().listenerCount('ready')).toBe(0);
+    expect(provider.status).toBe(ProviderStatus.ERROR);
+    expect(ready).not.toHaveBeenCalled();
+  });
+});

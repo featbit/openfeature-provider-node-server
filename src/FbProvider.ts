@@ -33,6 +33,22 @@ export class FbProvider implements Provider {
   private readonly client: IFbClient;
   private readonly clientConstructionError: any;
   private innerStatus: ProviderStatus = ProviderStatus.NOT_READY;
+  private closed = false;
+  private recoveryTimer?: ReturnType<typeof setTimeout>;
+
+  private readonly onReady = () => {
+    if (this.closed || this.innerStatus !== ProviderStatus.ERROR || this.recoveryTimer) {
+      return;
+    }
+    // Let OpenFeature finish handling the rejected initialize() promise first.
+    this.recoveryTimer = setTimeout(() => {
+      this.recoveryTimer = undefined;
+      if (!this.closed && this.innerStatus === ProviderStatus.ERROR && this.client.initialized()) {
+        this.innerStatus = ProviderStatus.READY;
+        this.events.emit(ProviderEvents.Ready);
+      }
+    }, 0);
+  };
 
   public readonly events = new OpenFeatureEventEmitter();
 
@@ -49,6 +65,7 @@ export class FbProvider implements Provider {
 
     try {
       this.client = new FbClientBuilder(options).build();
+      this.client.on('ready', this.onReady);
       this.client.on('update', (keys: string[]) => {
         this.events.emit(ProviderEvents.ConfigurationChanged, {flagsChanged: keys})
       })
@@ -68,9 +85,16 @@ export class FbProvider implements Provider {
       throw new Error('Unknown problem encountered during initialization');
     }
     try {
-      await this.client.waitForInitialization();
+      // The SDK can be ready even though its cached initialization promise rejected.
+      if (!this.client.initialized()) {
+        await this.client.waitForInitialization();
+      }
       this.innerStatus = ProviderStatus.READY;
     } catch (e) {
+      if (this.client.initialized()) {
+        this.innerStatus = ProviderStatus.READY;
+        return;
+      }
       this.innerStatus = ProviderStatus.ERROR;
       throw e;
     }
@@ -207,6 +231,9 @@ export class FbProvider implements Provider {
   }
 
   async onClose(): Promise<void> {
+    this.closed = true;
+    clearTimeout(this.recoveryTimer);
+    this.client?.off('ready', this.onReady);
     await this.client.close();
   }
 }
